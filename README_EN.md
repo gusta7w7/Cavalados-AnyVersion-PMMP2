@@ -23,7 +23,7 @@
 
 ### Key Modifications
 
-Developed and maintained by **@gusta7w7** with contributions from **@Madson_1000**, this API includes:
+Developed by **@Madson_1000 Mcpe** and maintained by **@gusta7w7** this API includes: 
 
 - **Complete removal of malicious code**
 - **Integrated Anti-DDoS system** with packet limiter
