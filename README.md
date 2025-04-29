@@ -53,6 +53,7 @@ Desenvolvido e mantido por **@gusta7w7** com contribuições de **@Madson_1000**
 - **PocketMine-MP (Fork)**
 - **PHP 7.x+**
 - **AntiDdos FZ-MG**
+- **Baseado em Genisys**
 
 ---
 
