@@ -1,75 +1,87 @@
-<div align="side">
-  <a href="https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2"
-  </a><h3 align="center">Cavalados API</h3>  <p align="center">
-    Uma API brasileira multi-versão para mcpe 0.14 & 0.15.10 de PocketMine-MP baseada na LearXD API e no Genisys 0.15.10, mas com melhorias de segurança e performance.
-    <br />
-    <br />
-    ·
-    <a href="https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/issues">Reportar Bug</a>
-    ·
+<div align="center">
+  <h1>Cavalados API</h1>
+  <p>
+    Uma poderosa API multi-versão brasileira para Minecraft Pocket Edition 0.14.x & 0.15.10, baseada na LearXD API e Genisys 0.15.10,<br>
+    com foco em segurança, estabilidade e performance para servidores PocketMine-MP.
+  </p>
+  <p>
+    <a href="https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/issues">Reportar Bug</a> |
     <a href="https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/issues">Solicitar Funcionalidade</a>
   </p>
-  
+  <p>
+    <img src="https://img.shields.io/github/license/gusta7w7/Cavalados-AnyVersion-PMMP2" alt="Licença">
+    <img src="https://img.shields.io/github/stars/gusta7w7/Cavalados-AnyVersion-PMMP2?style=social" alt="Estrelas">
+    <img src="https://img.shields.io/github/forks/gusta7w7/Cavalados-AnyVersion-PMMP2?style=social" alt="Forks">
+    <img src="https://img.shields.io/github/last-commit/gusta7w7/Cavalados-AnyVersion-PMMP2" alt="Último Commit">
+  </p>
+</div>
+
+---
+
 ## Sobre o Projeto
 
-Este projeto é uma API alternativa e segura para PocketMine-MP, criada com base na LearXD API, mas sem as brechas de segurança como eval, backdoors ou criptografia suspeita.
+**Cavalados API** é uma alternativa robusta e segura ao PocketMine-MP tradicional, livre de backdoors, funções inseguras como `eval`, e criptografias obscuras. Construída sobre a LearXD API e Genisys, esta API oferece uma base sólida e otimizada para servidores de MCPE antigos (0.14.x & 0.15.x).
 
-### Modificações realizadas por Madson_1000 Mcpe e ```@gusta7w7``` incluem:
+### Principais Modificações
 
-- Remoção de código malicioso.
+Desenvolvido e mantido por **@gusta7w7** com contribuições de **@Madson_1000**, esta API inclui:
 
-- Implementação de proteção Anti-DDOS com limitador de pacotes.
+- **Remoção completa de código malicioso**
+- **Sistema Anti-DDoS integrado** com limitador de pacotes
+- **Otimização de carregamento de skins**, evitando crashes com muitos jogadores
+- **Compatibilidade multi-versão**: MCPE 0.14.x e 0.15.10
+- **Compatível com hospedagens e servidores locais**
 
-- Otimização de carregamento de skins para evitar crashes com muitos jogadores.
+---
 
-- Compatibilidade com múltiplas versões (MCPE 0.14.x & 0.15.x).
+## Funcionalidades
 
-- Compatibilidade com carregamento local e em hospedagens.
+- Suporte a múltiplas versões do MCPE (0.14.x e 0.15.10)
+- Licenciado sob GNU GPL v3 — 100% Open Source
+- Proteção Anti-DDoS nativa
+- Alto desempenho e estabilidade com otimizações críticas
+- Suporte a múltiplos idiomas
+- Ideal para servidores personalizados, roleplay ou PvP antigos
 
+---
 
-### Funcionalidades
+## Tecnologias Utilizadas
 
-- MultiVersão para MCPE 0.14.x e 0.15.10.
+- **PocketMine-MP (Fork)**
+- **PHP 7.x+**
+- **AntiDdos FZ-MG**
 
-- 100% Open Source com Licença GNU GPL.
+---
 
-- Anti-DDOS com limitador de pacotes.
+## Como Usar
 
-- Otimizações no carregamento de skins.
+Clone este repositório ou baixe a versão mais recente e utilize como base do seu servidor customizado. Esta API foi pensada para desenvolvedores que desejam trabalhar com MCPE clássico com segurança e estabilidade.
 
-- Compatibilidade local e com hostings.
+```bash
+git clone https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2
+```
 
-- Suporte a múltiplos idiomas.
+---
 
+## Licença
 
-### Tecnologias Utilizadas
+Distribuído sob a **GNU General Public License v3.0**. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-- PocketMine-MP (fork)
-- AntiDdos FZ-MG
+---
 
-- PHP 7.x+
+## Contato
 
-### Uso
+Desenvolvido por **[@gusta7w7](https://github.com/gusta7w7)**  
+Para dúvidas, sugestões ou contribuições, abra uma issue no GitHub.
 
-Esta API pode ser utilizada como base para servidores customizados de MCPE. Ideal para desenvolvedores que buscam uma versão segura e estável do PocketMine com suporte a versões 0.14.x & 0.15.x do Minecraft PE.
+---
 
+## Agradecimentos
 
-### Licença
+- **@Madson_1000** – Modificações e base do fork
+- **@m4theuswtfkkj** – Correção de crash relacionado a skins
+- **@LearXD** – API base e inspiração (Genisys AnyVersion)
 
-Distribuído sob a licença GNU General Public License v3.0. Veja o LICENSE para mais informações.
+---
 
-### Contato
-
-```@gusta7w7```
-
-### Link do Projeto: 
-
-- https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2
-
-### Agradecimentos
-
-- ```@Madson_1000```– modificações iniciais do fork.
-
-- ```@m4theuswtfkkj``` – correção do crash com skins.
-
-- ```@LearXD``` - API AnyVersion Based (Genisys)
+**Link do Projeto:** [https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2](https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2)
