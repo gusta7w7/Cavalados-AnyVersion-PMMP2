@@ -27,7 +27,7 @@
 
 ### Principais Modificações
 
-Desenvolvido e mantido por **@gusta7w7** com contribuições de **@Madson_1000**, esta API inclui:
+Desenvolvido por **@Madson_1000 Mcpe** e mantido por **@gusta7w7** esta API inclui:
 
 - **Remoção completa de código malicioso**
 - **Sistema Anti-DDoS integrado** com limitador de pacotes
