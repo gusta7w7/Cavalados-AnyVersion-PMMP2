@@ -49,6 +49,7 @@ Developed and maintained by **@gusta7w7** with contributions from **@Madson_1000
 - **PocketMine-MP (Fork)**
 - **PHP 7.x+**
 - **AntiDdos FZ-MG**
+- **Genisys Based**
 
 ---
 
