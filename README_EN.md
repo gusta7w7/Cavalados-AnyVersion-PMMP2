@@ -1,8 +1,7 @@
 <div align="center">
   <h1>Cavalados API</h1>
   <p>
-    A powerful Brazilian multi-version API for Minecraft Pocket Edition 0.14.x & 0.15.10, based on the LearXD API and Genisys 0.15.10,<br>
-    focused on security, stability, and performance for PocketMine-MP servers.
+    A powerful Brazilian multi-version API for Minecraft Pocket Edition 0.14.x & 0.15.10, based on the LearXD API and Genisys 0.15.10, focused on security, stability, and performance for PocketMine-MP servers.
   </p>
   <p>
     <a href="https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/issues">Report a Bug</a> |
@@ -81,6 +80,14 @@ For questions, suggestions, or contributions, open an issue on GitHub.
 - **@Madson_1000** – Fork modifications
 - **@m4theuswtfkkj** – Crash fix related to skins
 - **@LearXD** – Base API and inspiration (Genisys AnyVersion)
+
+---
+
+## Contributors
+
+We would like to thank the contributors who have contributed to this project:
+
+[![](https://contrib.rocks/image?repo=gusta7w7/Cavalados-AnyVersion-PMMP2)](https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/graphs/contributors)
 
 ---
 
