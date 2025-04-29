@@ -14,17 +14,17 @@
 
 Este projeto é uma API alternativa e segura para PocketMine-MP, criada com base na LearXD API, mas sem as brechas de segurança como eval, backdoors ou criptografia suspeita.
 
-Modificações realizadas por Madson_1000 e @gusta7w7 incluem:
+### Modificações realizadas por Madson_1000 Mcpe e ```@gusta7w7``` incluem:
 
-Remoção de código malicioso.
+- Remoção de código malicioso.
 
-Implementação de proteção Anti-DDOS com limitador de pacotes.
+- Implementação de proteção Anti-DDOS com limitador de pacotes.
 
-Otimização de carregamento de skins para evitar crashes com muitos jogadores.
+- Otimização de carregamento de skins para evitar crashes com muitos jogadores.
 
-Compatibilidade com múltiplas versões (MCPE 0.14.x & 0.15.10).
+- Compatibilidade com múltiplas versões (MCPE 0.14.x & 0.15.x).
 
-Compatibilidade com carregamento local e em hospedagens.
+- Compatibilidade com carregamento local e em hospedagens.
 
 
 ### Funcionalidades
