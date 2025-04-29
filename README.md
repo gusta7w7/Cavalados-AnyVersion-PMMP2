@@ -1,7 +1,7 @@
 <div align="side">
   <a href="https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2"
-  </a><h3 align="center">Cavalados-AnyVersion-PMMP2</h3>  <p align="center">
-    Uma API brasileira multi-versão para PocketMine-MP baseada na LearXD API, mas com melhorias de segurança e performance.
+  </a><h3 align="center">Cavalados API</h3>  <p align="center">
+    Uma API brasileira multi-versão para mcpe 0.14 & 0.15.10 de PocketMine-MP baseada na LearXD API e no Genisys 0.15.10, mas com melhorias de segurança e performance.
     <br />
     <br />
     ·
@@ -72,4 +72,4 @@ Distribuído sob a licença GNU General Public License v3.0. Veja o LICENSE para
 
 - ```@m4theuswtfkkj``` – correção do crash com skins.
 
-- ```@LearXD``` - API AnyVersion Based
+- ```@LearXD``` - API AnyVersion Based (Genisys)
