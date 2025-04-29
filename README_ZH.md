@@ -49,6 +49,7 @@
 - **PocketMine-MP（分支）**
 - **PHP 7.x+**
 - **AntiDdos FZ-MG**
+- **基于 Genisys**
 
 ---
 
