@@ -1,10 +1,13 @@
 <div align="center">
   <h1>Cavalados API</h1>
   <p>
-    Uma poderosa API multi-versão brasileira para Minecraft Pocket Edition 0.14.x & 0.15.10, baseada na LearXD API e Genisys 0.15.10,<br>
-    com foco em segurança, estabilidade e performance para servidores PocketMine-MP.
+    Uma poderosa API multi-versão brasileira para Minecraft Pocket Edition 0.14.x & 0.15.10, baseada na LearXD API e Genisys 0.15.10, com foco em segurança, estabilidade e performance para servidores PocketMine-MP.
   </p>
   <p>
+  <p>
+    <a href="README_EN.md"><strong>English</strong></a> |
+    <a href="README_ZH.md"><strong>简体中文</strong></a>
+  </p>
     <a href="https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/issues">Reportar Bug</a> |
     <a href="https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/issues">Solicitar Funcionalidade</a>
   </p>
