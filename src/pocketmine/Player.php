@@ -1,4 +1,7 @@
-<?php namespace pocketmine;
+<?php 
+
+namespace pocketmine;
+
 use pocketmine\network\protocol\StrangePacket;
 use pocketmine\block\Block;
 use pocketmine\block\Air;
@@ -150,7 +153,10 @@ use pocketmine\utils\BinaryStream;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 use raklib\Binary;
-class Player extends Human implements CommandSender,InventoryHolder,ChunkLoader,IPlayer{const SURVIVAL=0;
+
+class Player extends Human implements CommandSender,InventoryHolder,ChunkLoader,IPlayer {
+
+const SURVIVAL=0;
 const CREATIVE=1;
 const ADVENTURE=2;
 const SPECTATOR=3;
