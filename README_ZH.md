@@ -4,13 +4,13 @@
     一个强大的巴西多版本 API，适用于 Minecraft PE 0.14.x 和 0.15.10，基于 LearXD API 和 Genisys 0.15.10，专注于 PocketMine-MP 服务器的安全性、稳定性和性能。
   </p>
   <p>
-    <a href="https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/issues">报告错误</a> |
-    <a href="https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/issues">请求功能</a>
+    <a href="https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/issues">反馈bug</a> |
+    <a href="https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/issues">请求新功能</a>
   </p>
   <p>
     <img src="https://img.shields.io/github/license/gusta7w7/Cavalados-AnyVersion-PMMP2" alt="许可证">
     <img src="https://img.shields.io/github/stars/gusta7w7/Cavalados-AnyVersion-PMMP2?style=social" alt="星标">
-    <img src="https://img.shields.io/github/forks/gusta7w7/Cavalados-AnyVersion-PMMP2?style=social" alt="分叉">
+    <img src="https://img.shields.io/github/forks/gusta7w7/Cavalados-AnyVersion-PMMP2?style=social" alt="分支">
     <img src="https://img.shields.io/github/last-commit/gusta7w7/Cavalados-AnyVersion-PMMP2" alt="最后提交">
   </p>
 </div>
@@ -21,7 +21,7 @@
 
 **Cavalados API** 是 PocketMine-MP 的一个强大且安全的替代方案，完全没有后门、不安全函数（如 `eval`）以及可疑加密。基于 LearXD API 和 Genisys 构建，此 API 为旧版本 MCPE 服务器（0.14.x 和 0.15.x）提供了稳定优化的基础。
 
-### 主要修改
+### 主要更改
 
 由**@Madson_1000 Mcpe**开发并由**@gusta7w7**维护，此 API 包括:
 
@@ -33,7 +33,7 @@
 
 ---
 
-## 功能特色
+## 项目特性
 
 - 支持多个 MCPE 版本（0.14.x 和 0.15.10）
 - 遵循 GNU GPL v3 协议 — 100% 开源
