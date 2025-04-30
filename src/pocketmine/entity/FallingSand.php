@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -28,7 +28,6 @@ use pocketmine\block\SnowLayer;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\sound\AnvilFallSound;
 use pocketmine\math\Vector3;
@@ -37,166 +36,179 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class FallingSand extends Entity{
-	const NETWORK_ID = 66;
+use function abs;
 
-	const DATA_BLOCK_INFO = 20;
+class FallingSand extends Entity
+{
+    const NETWORK_ID = 66;
 
-	public $width = 0.98;
-	public $length = 0.98;
-	public $height = 0.98;
+    const DATA_BLOCK_INFO = 20;
 
-	protected $gravity = 0.04;
-	protected $drag = 0.02;
-	protected $blockId = 0;
-	protected $damage;
+    public $width = 0.98;
+    public $length = 0.98;
+    public $height = 0.98;
 
-	public $canCollide = false;
+    protected $gravity = 0.04;
+    protected $drag = 0.02;
+    protected $blockId = 0;
+    protected $damage;
 
-	protected function initEntity(){
-		parent::initEntity();
-		if(isset($this->namedtag->TileID)){
-			$this->blockId = $this->namedtag["TileID"];
-		}elseif(isset($this->namedtag->Tile)){
-			$this->blockId = $this->namedtag["Tile"];
-			$this->namedtag["TileID"] = new IntTag("TileID", $this->blockId);
-		}
+    public $canCollide = false;
 
-		if(isset($this->namedtag->Data)){
-			$this->damage = $this->namedtag["Data"];
-		}
+    protected function initEntity()
+    {
+        parent::initEntity();
+        if (isset($this->namedtag->TileID)) {
+            $this->blockId = $this->namedtag["TileID"];
+        } elseif (isset($this->namedtag->Tile)) {
+            $this->blockId = $this->namedtag["Tile"];
+            $this->namedtag["TileID"] = new IntTag("TileID", $this->blockId);
+        }
 
-		if($this->blockId === 0){
-			$this->close();
-			return;
-		}
+        if (isset($this->namedtag->Data)) {
+            $this->damage = $this->namedtag["Data"];
+        }
 
-		$this->setDataProperty(self::DATA_BLOCK_INFO, self::DATA_TYPE_INT, $this->getBlock() | ($this->getDamage() << 8));
-	}
+        if ($this->blockId === 0) {
+            $this->close();
+            return;
+        }
 
-	public function canCollideWith(Entity $entity){
-		return false;
-	}
+        $this->setDataProperty(self::DATA_BLOCK_INFO, self::DATA_TYPE_INT, $this->getBlock() | ($this->getDamage() << 8));
+    }
 
-	public function attack($damage, EntityDamageEvent $source){
-		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
-			parent::attack($damage, $source);
-		}
-	}
+    public function canCollideWith(Entity $entity)
+    {
+        return false;
+    }
 
-	public function onUpdate($currentTick){
+    public function attack($damage, EntityDamageEvent $source)
+    {
+        if ($source->getCause() === EntityDamageEvent::CAUSE_VOID) {
+            parent::attack($damage, $source);
+        }
+    }
 
-		if($this->closed){
-			return false;
-		}
+    public function onUpdate($currentTick)
+    {
 
-		$this->timings->startTiming();
+        if ($this->closed) {
+            return false;
+        }
 
-		$tickDiff = $currentTick - $this->lastUpdate;
-		if($tickDiff <= 0 and !$this->justCreated){
-			return true;
-		}
+        $this->timings->startTiming();
 
-		$this->lastUpdate = $currentTick;
+        $tickDiff = $currentTick - $this->lastUpdate;
+        if ($tickDiff <= 0 && !$this->justCreated) {
+            return true;
+        }
 
-		$height = $this->fallDistance;
+        $this->lastUpdate = $currentTick;
 
-		$hasUpdate = $this->entityBaseTick($tickDiff);
+        $height = $this->fallDistance;
 
-		if($this->isAlive()){
-			$pos = (new Vector3($this->x - 0.5, $this->y, $this->z - 0.5))->round();
+        $hasUpdate = $this->entityBaseTick($tickDiff);
 
-			if($this->ticksLived === 1){
-				$block = $this->level->getBlock($pos);
-				if($block->getId() !== $this->blockId){
-					return true;
-				}
-				$this->level->setBlock($pos, Block::get(0), true);
-			}
+        if ($this->isAlive()) {
+            $pos = (new Vector3($this->x - 0.5, $this->y, $this->z - 0.5))->round();
 
-			$this->motionY -= $this->gravity;
+            if ($this->ticksLived === 1) {
+                $block = $this->level->getBlock($pos);
+                if ($block->getId() !== $this->blockId) {
+                    return true;
+                }
+                $this->level->setBlock($pos, Block::get(0), true);
+            }
 
-			$this->move($this->motionX, $this->motionY, $this->motionZ);
+            $this->motionY -= $this->gravity;
 
-			$friction = 1 - $this->drag;
+            $this->move($this->motionX, $this->motionY, $this->motionZ);
 
-			$this->motionX *= $friction;
-			$this->motionY *= 1 - $this->drag;
-			$this->motionZ *= $friction;
+            $friction = 1 - $this->drag;
 
-			$pos = (new Vector3($this->x - 0.5, $this->y, $this->z - 0.5))->round();
+            $this->motionX *= $friction;
+            $this->motionY *= 1 - $this->drag;
+            $this->motionZ *= $friction;
 
-			if($this->onGround){
-				$this->kill();
-				$block = $this->level->getBlock($pos);
-				if($block->getId() > 0 and !$block->isSolid() and !($block instanceof Liquid)){
-					$this->getLevel()->dropItem($this, ItemItem::get($this->getBlock(), $this->getDamage(), 1));
-				}else{
-					if($block instanceof SnowLayer){
-						$oldDamage = $block->getDamage();
-						$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), $this->getDamage() + $oldDamage)));
-					}else{
-						$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), $this->getDamage())));
-					}
+            $pos = (new Vector3($this->x - 0.5, $this->y, $this->z - 0.5))->round();
 
-					if(!$ev->isCancelled()){
-						$this->getLevel()->setBlock($pos, $ev->getTo(), true);
-						if($ev->getTo() instanceof Anvil){
-							$sound = new AnvilFallSound($this);
-							$this->getLevel()->addSound($sound);
-							foreach($this->level->getNearbyEntities($this->boundingBox->grow(0.1, 0.1, 0.1), $this) as $entity){
-								$entity->scheduleUpdate();
-								if(!$entity->isAlive()){
-									continue;
-								}
-								if($entity instanceof Living){
-									$damage = ($height - 1) * 2;
-									if($damage > 40) $damage = 40;
-									$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageByEntityEvent::CAUSE_FALL, $damage, 0.1);
-									$entity->attack($damage, $ev);
-								}
-							}
+            if ($this->onGround) {
+                $this->kill();
+                $block = $this->level->getBlock($pos);
+                if ($block->getId() > 0 && !$block->isSolid() && !($block instanceof Liquid)) {
+                    $this->getLevel()->dropItem($this, ItemItem::get($this->getBlock(), $this->getDamage(), 1));
+                } else {
+                    if ($block instanceof SnowLayer) {
+                        $oldDamage = $block->getDamage();
+                        $this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), $this->getDamage() + $oldDamage)));
+                    } else {
+                        $this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), $this->getDamage())));
+                    }
 
-						}
-					}
-				}
-				$hasUpdate = true;
-			}
+                    if (!$ev->isCancelled()) {
+                        $this->getLevel()->setBlock($pos, $ev->getTo(), true);
+                        if ($ev->getTo() instanceof Anvil) {
+                            $sound = new AnvilFallSound($this);
+                            $this->getLevel()->addSound($sound);
+                            foreach ($this->level->getNearbyEntities($this->boundingBox->grow(0.1, 0.1, 0.1), $this) as $entity) {
+                                $entity->scheduleUpdate();
+                                if (!$entity->isAlive()) {
+                                    continue;
+                                }
+                                if ($entity instanceof Living) {
+                                    $damage = ($height - 1) * 2;
+                                    if ($damage > 40) {
+                                        $damage = 40;
+                                    }
+                                    $ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageByEntityEvent::CAUSE_FALL, $damage, 0.1);
+                                    $entity->attack($damage, $ev);
+                                }
+                            }
 
-			$this->updateMovement();
-		}
+                        }
+                    }
+                }
+                $hasUpdate = true;
+            }
 
-		return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
-	}
+            $this->updateMovement();
+        }
 
-	public function getBlock(){
-		return $this->blockId;
-	}
+        return $hasUpdate || !$this->onGround || abs($this->motionX) > 0.00001 || abs($this->motionY) > 0.00001 || abs($this->motionZ) > 0.00001;
+    }
 
-	public function getDamage(){
-		return $this->damage;
-	}
+    public function getBlock()
+    {
+        return $this->blockId;
+    }
 
-	public function saveNBT(){
-		$this->namedtag->TileID = new IntTag("TileID", $this->blockId);
-		$this->namedtag->Data = new ByteTag("Data", $this->damage);
-	}
+    public function getDamage()
+    {
+        return $this->damage;
+    }
 
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = FallingSand::NETWORK_ID;
-		$pk->eid = $this->getId();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
+    public function saveNBT()
+    {
+        $this->namedtag->TileID = new IntTag("TileID", $this->blockId);
+        $this->namedtag->Data = new ByteTag("Data", $this->damage);
+    }
 
-		parent::spawnTo($player);
-	}
+    public function spawnTo(Player $player)
+    {
+        $pk = new AddEntityPacket();
+        $pk->type = FallingSand::NETWORK_ID;
+        $pk->eid = $this->getId();
+        $pk->x = $this->x;
+        $pk->y = $this->y;
+        $pk->z = $this->z;
+        $pk->speedX = $this->motionX;
+        $pk->speedY = $this->motionY;
+        $pk->speedZ = $this->motionZ;
+        $pk->yaw = $this->yaw;
+        $pk->pitch = $this->pitch;
+        $pk->metadata = $this->dataProperties;
+        $player->dataPacket($pk);
+
+        parent::spawnTo($player);
+    }
 }

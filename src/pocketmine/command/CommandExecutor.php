@@ -2,8 +2,8 @@
 
 /*
  *
- *    ____ _                   _                   
- *  / ___| | _____      _____| |_ ___  _ __   ___ 
+ *    ____ _                   _
+ *  / ___| | _____      _____| |_ ___  _ __   ___
  * | |  _| |/ _ \ \ /\ / / __| __/ _ \| '_ \ / _ \
  * | |_| | | (_) \ V  V /\__ \ || (_) | | | |  __/
  *  \____|_|\___/ \_/\_/ |___/\__\___/|_| |_|\___|
@@ -20,17 +20,15 @@
 
 namespace pocketmine\command;
 
-
-interface CommandExecutor{
-
-	/**
-	 * @param CommandSender $sender
-	 * @param Command       $command
-	 * @param string        $label
-	 * @param string[]      $args
-	 *
-	 * @return boolean
-	 */
-	public function onCommand(CommandSender $sender, Command $command, $label, array $args);
-
+interface CommandExecutor
+{
+    /**
+     * @param CommandSender $sender
+     * @param Command       $command
+     * @param string        $label
+     * @param string[]      $args
+     *
+     * @return boolean
+     */
+    public function onCommand(CommandSender $sender, Command $command, $label, array $args);
 }

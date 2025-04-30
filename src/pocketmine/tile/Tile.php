@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,13 +15,14 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
 /**
  * All the Tile classes and related classes
  */
+
 namespace pocketmine\tile;
 
 use pocketmine\event\Timings;
@@ -34,156 +35,171 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\ChunkException;
 
-abstract class Tile extends Position{
-	const SIGN = "Sign";
-	const CHEST = "Chest";
-	const FURNACE = "Furnace";
-	const FLOWER_POT = "FlowerPot";
-	const MOB_SPAWNER = "MobSpawner";
-	const SKULL = "Skull";
-	const BREWING_STAND = "BrewingStand";
-	const ENCHANT_TABLE = "EnchantTable";
-	const ITEM_FRAME = "ItemFrame";
-	const DISPENSER = "Dispenser";
-	const DROPPER = "Dropper";
-	const DAY_LIGHT_DETECTOR = "DLDetector";
-	const CAULDRON = "Cauldron";
-	const HOPPER = "Hopper";
+use function is_a;
+use function microtime;
 
-	public static $tileCount = 1;
+abstract class Tile extends Position
+{
+    const SIGN = "Sign";
+    const CHEST = "Chest";
+    const FURNACE = "Furnace";
+    const FLOWER_POT = "FlowerPot";
+    const MOB_SPAWNER = "MobSpawner";
+    const SKULL = "Skull";
+    const BREWING_STAND = "BrewingStand";
+    const ENCHANT_TABLE = "EnchantTable";
+    const ITEM_FRAME = "ItemFrame";
+    const DISPENSER = "Dispenser";
+    const DROPPER = "Dropper";
+    const DAY_LIGHT_DETECTOR = "DLDetector";
+    const CAULDRON = "Cauldron";
+    const HOPPER = "Hopper";
 
-	private static $knownTiles = [];
-	private static $shortNames = [];
+    public static $tileCount = 1;
 
-	/** @var Chunk */
-	public $chunk;
-	public $name;
-	public $id;
-	public $x;
-	public $y;
-	public $z;
-	public $attach;
-	public $metadata;
-	public $closed = false;
-	public $namedtag;
-	protected $lastUpdate;
-	protected $server;
-	protected $timings;
+    private static $knownTiles = [];
+    private static $shortNames = [];
 
-	/** @var \pocketmine\event\TimingsHandler */
-	public $tickTimer;
+    /** @var Chunk */
+    public $chunk;
+    public $name;
+    public $id;
+    public $x;
+    public $y;
+    public $z;
+    public $attach;
+    public $metadata;
+    public $closed = false;
+    public $namedtag;
+    protected $lastUpdate;
+    protected $server;
+    protected $timings;
 
-	/**
-	 * @param string    $type
-	 * @param FullChunk $chunk
-	 * @param CompoundTag  $nbt
-	 * @param           $args
-	 *
-	 * @return Tile
-	 */
-	public static function createTile($type, FullChunk $chunk, CompoundTag $nbt, ...$args){
-		if(isset(self::$knownTiles[$type])){
-			$class = self::$knownTiles[$type];
-			return new $class($chunk, $nbt, ...$args);
-		}
+    /** @var \pocketmine\event\TimingsHandler */
+    public $tickTimer;
 
-		return null;
-	}
+    /**
+     * @param string    $type
+     * @param FullChunk $chunk
+     * @param CompoundTag  $nbt
+     * @param           $args
+     *
+     * @return Tile
+     */
+    public static function createTile($type, FullChunk $chunk, CompoundTag $nbt, ...$args)
+    {
+        if (isset(self::$knownTiles[$type])) {
+            $class = self::$knownTiles[$type];
+            return new $class($chunk, $nbt, ...$args);
+        }
 
-	/**
-	 * @param $className
-	 *
-	 * @return bool
-	 */
-	public static function registerTile($className){
-		$class = new \ReflectionClass($className);
-		if(is_a($className, Tile::class, true) and !$class->isAbstract()){
-			self::$knownTiles[$class->getShortName()] = $className;
-			self::$shortNames[$className] = $class->getShortName();
-			return true;
-		}
+        return null;
+    }
 
-		return false;
-	}
+    /**
+     * @param $className
+     *
+     * @return bool
+     */
+    public static function registerTile($className)
+    {
+        $class = new \ReflectionClass($className);
+        if (is_a($className, Tile::class, true) && !$class->isAbstract()) {
+            self::$knownTiles[$class->getShortName()] = $className;
+            self::$shortNames[$className] = $class->getShortName();
+            return true;
+        }
 
-	/**
-	 * Returns the short save name
-	 *
-	 * @return string
-	 */
-	public function getSaveId(){
-		return self::$shortNames[static::class];
-	}
+        return false;
+    }
 
-	public function __construct(FullChunk $chunk, CompoundTag $nbt){
-		if($chunk === null or $chunk->getProvider() === null){
-			throw new ChunkException("Invalid garbage Chunk given to Tile");
-		}
+    /**
+     * Returns the short save name
+     *
+     * @return string
+     */
+    public function getSaveId()
+    {
+        return self::$shortNames[static::class];
+    }
 
-		$this->timings = Timings::getTileEntityTimings($this);
+    public function __construct(FullChunk $chunk, CompoundTag $nbt)
+    {
+        if ($chunk === null || $chunk->getProvider() === null) {
+            throw new ChunkException("Invalid garbage Chunk given to Tile");
+        }
 
-		$this->server = $chunk->getProvider()->getLevel()->getServer();
-		$this->chunk = $chunk;
-		$this->setLevel($chunk->getProvider()->getLevel());
-		$this->namedtag = $nbt;
-		$this->name = "";
-		$this->lastUpdate = microtime(true);
-		$this->id = Tile::$tileCount++;
-		$this->x = (int) $this->namedtag["x"];
-		$this->y = (int) $this->namedtag["y"];
-		$this->z = (int) $this->namedtag["z"];
+        $this->timings = Timings::getTileEntityTimings($this);
 
-		$this->chunk->addTile($this);
-		$this->getLevel()->addTile($this);
-		$this->tickTimer = Timings::getTileEntityTimings($this);
-	}
+        $this->server = $chunk->getProvider()->getLevel()->getServer();
+        $this->chunk = $chunk;
+        $this->setLevel($chunk->getProvider()->getLevel());
+        $this->namedtag = $nbt;
+        $this->name = "";
+        $this->lastUpdate = microtime(true);
+        $this->id = Tile::$tileCount++;
+        $this->x = (int) $this->namedtag["x"];
+        $this->y = (int) $this->namedtag["y"];
+        $this->z = (int) $this->namedtag["z"];
 
-	public function getId(){
-		return $this->id;
-	}
+        $this->chunk->addTile($this);
+        $this->getLevel()->addTile($this);
+        $this->tickTimer = Timings::getTileEntityTimings($this);
+    }
 
-	public function saveNBT(){
-		$this->namedtag->id = new StringTag("id", $this->getSaveId());
-		$this->namedtag->x = new IntTag("x", $this->x);
-		$this->namedtag->y = new IntTag("y", $this->y);
-		$this->namedtag->z = new IntTag("z", $this->z);
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 * @return \pocketmine\block\Block
-	 */
-	public function getBlock(){
-		return $this->level->getBlock($this);
-	}
+    public function saveNBT()
+    {
+        $this->namedtag->id = new StringTag("id", $this->getSaveId());
+        $this->namedtag->x = new IntTag("x", $this->x);
+        $this->namedtag->y = new IntTag("y", $this->y);
+        $this->namedtag->z = new IntTag("z", $this->z);
+    }
 
-	public function onUpdate(){
-		return false;
-	}
+    /**
+     * @return \pocketmine\block\Block
+     */
+    public function getBlock()
+    {
+        return $this->level->getBlock($this);
+    }
 
-	public final function scheduleUpdate(){
-		$this->level->updateTiles[$this->id] = $this;
-	}
+    public function onUpdate()
+    {
+        return false;
+    }
 
-	public function __destruct(){
-		$this->close();
-	}
+    final public function scheduleUpdate()
+    {
+        $this->level->updateTiles[$this->id] = $this;
+    }
 
-	public function close(){
-		if(!$this->closed){
-			$this->closed = true;
-			unset($this->level->updateTiles[$this->id]);
-			if($this->chunk instanceof FullChunk){
-				$this->chunk->removeTile($this);
-			}
-			if(($level = $this->getLevel()) instanceof Level){
-				$level->removeTile($this);
-			}
-			$this->level = null;
-		}
-	}
+    public function __destruct()
+    {
+        $this->close();
+    }
 
-	public function getName() : string{
-		return $this->name;
-	}
+    public function close()
+    {
+        if (!$this->closed) {
+            $this->closed = true;
+            unset($this->level->updateTiles[$this->id]);
+            if ($this->chunk instanceof FullChunk) {
+                $this->chunk->removeTile($this);
+            }
+            if (($level = $this->getLevel()) instanceof Level) {
+                $level->removeTile($this);
+            }
+            $this->level = null;
+        }
+    }
 
+    public function getName() : string
+    {
+        return $this->name;
+    }
 }

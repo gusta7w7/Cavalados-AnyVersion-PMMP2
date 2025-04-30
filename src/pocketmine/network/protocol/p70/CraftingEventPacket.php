@@ -1,41 +1,48 @@
 <?php
+
 namespace pocketmine\network\protocol\p70;
 
-use pocketmine\utils\p70\Binary;
+use function ord;
+use function unpack;
 
-class CraftingEventPacket extends DataPacket{
-	const NETWORK_ID = Info::CRAFTING_EVENT_PACKET;
+use const PHP_INT_SIZE;
 
-	public $windowId;
-	public $type;
-	public $id;
-	public $input = [];
-	public $output = [];
+class CraftingEventPacket extends DataPacket
+{
+    const NETWORK_ID = Info::CRAFTING_EVENT_PACKET;
 
-	public function clean(){
-		$this->input = [];
-		$this->output = [];
-		return parent::clean();
-	}
+    public $windowId;
+    public $type;
+    public $id;
+    public $input = [];
+    public $output = [];
 
-	public function decode(){
-		$this->windowId = ord($this->get(1));
-		$this->type = (PHP_INT_SIZE === 8 ? unpack("N", $this->get(4))[1] << 32 >> 32 : unpack("N", $this->get(4))[1]);
-		$this->id = $this->getUUID();
+    public function clean()
+    {
+        $this->input = [];
+        $this->output = [];
+        return parent::clean();
+    }
 
-		$size = (PHP_INT_SIZE === 8 ? unpack("N", $this->get(4))[1] << 32 >> 32 : unpack("N", $this->get(4))[1]);
-		for($i = 0; $i < $size and $i < 128; ++$i){
-			$this->input[] = $this->getSlot();
-		}
+    public function decode()
+    {
+        $this->windowId = ord($this->get(1));
+        $this->type = (PHP_INT_SIZE === 8 ? unpack("N", $this->get(4))[1] << 32 >> 32 : unpack("N", $this->get(4))[1]);
+        $this->id = $this->getUUID();
 
-		$size = (PHP_INT_SIZE === 8 ? unpack("N", $this->get(4))[1] << 32 >> 32 : unpack("N", $this->get(4))[1]);
-		for($i = 0; $i < $size and $i < 128; ++$i){
-			$this->output[] = $this->getSlot();
-		}
-	}
+        $size = (PHP_INT_SIZE === 8 ? unpack("N", $this->get(4))[1] << 32 >> 32 : unpack("N", $this->get(4))[1]);
+        for ($i = 0; $i < $size && $i < 128; ++$i) {
+            $this->input[] = $this->getSlot();
+        }
 
-	public function encode(){
+        $size = (PHP_INT_SIZE === 8 ? unpack("N", $this->get(4))[1] << 32 >> 32 : unpack("N", $this->get(4))[1]);
+        for ($i = 0; $i < $size && $i < 128; ++$i) {
+            $this->output[] = $this->getSlot();
+        }
+    }
 
-	}
+    public function encode()
+    {
 
+    }
 }

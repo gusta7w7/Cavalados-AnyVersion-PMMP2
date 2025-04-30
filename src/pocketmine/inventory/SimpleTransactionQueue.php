@@ -22,111 +22,120 @@
 namespace pocketmine\inventory;
 
 use pocketmine\event\inventory\InventoryTransactionEvent;
-use pocketmine\item\Item;
 use pocketmine\Player;
 
-class SimpleTransactionQueue implements TransactionQueue{
+use function microtime;
+use function spl_object_hash;
 
-	/** @var Player[] */
-	protected $player = null;
+class SimpleTransactionQueue implements TransactionQueue
+{
+    /** @var Player[] */
+    protected $player = null;
 
-	/** @var \SplQueue */
-	protected $transactionQueue;
-	/** @var \SplQueue */
-	protected $transactionsToRetry;
-	
-	/** @var Inventory[] */
-	protected $inventories;
+    /** @var \SplQueue */
+    protected $transactionQueue;
+    /** @var \SplQueue */
+    protected $transactionsToRetry;
 
-	/** @var float */
-	protected $lastUpdate = -1;
+    /** @var Inventory[] */
+    protected $inventories;
 
-	/** @var int */
-	protected $transactionCount = 0;
+    /** @var float */
+    protected $lastUpdate = -1;
 
-	/**
-	 * @param Player $player
-	 */
-	public function __construct(Player $player = null){
-		$this->player = $player;
-		$this->transactionQueue = new \SplQueue();
-		$this->transactionsToRetry = new \SplQueue();
-	}
+    /** @var int */
+    protected $transactionCount = 0;
 
-	/**
-	 * @return Player
-	 */
-	public function getPlayer(){
-		return $this->player;
-	}
+    /**
+     * @param Player $player
+     */
+    public function __construct(Player $player = null)
+    {
+        $this->player = $player;
+        $this->transactionQueue = new \SplQueue();
+        $this->transactionsToRetry = new \SplQueue();
+    }
 
-	public function getInventories(){
-		return $this->inventories;
-	}
+    /**
+     * @return Player
+     */
+    public function getPlayer()
+    {
+        return $this->player;
+    }
 
-	public function getTransactions(){
-		return $this->transactionQueue;
-	}
+    public function getInventories()
+    {
+        return $this->inventories;
+    }
 
-	public function getTransactionCount(){
-		return $this->transactionCount;
-	}
+    public function getTransactions()
+    {
+        return $this->transactionQueue;
+    }
 
-	public function addTransaction(Transaction $transaction){
-		$this->transactionQueue->enqueue($transaction);
-		if($transaction->getInventory() instanceof Inventory){
-			/** For dropping items, the target inventory is open air, a.k.a. null. */
-			$this->inventories[spl_object_hash($transaction)] = $transaction->getInventory();
-		}
-		$this->lastUpdate = microtime(true);
-		$this->transactionCount += 1;
-	}
+    public function getTransactionCount()
+    {
+        return $this->transactionCount;
+    }
 
-	public function execute(){
-		/** @var Transaction[] */
-		$failed = [];
+    public function addTransaction(Transaction $transaction)
+    {
+        $this->transactionQueue->enqueue($transaction);
+        if ($transaction->getInventory() instanceof Inventory) {
+            /** For dropping items, the target inventory is open air, a.k.a. null. */
+            $this->inventories[spl_object_hash($transaction)] = $transaction->getInventory();
+        }
+        $this->lastUpdate = microtime(true);
+        $this->transactionCount += 1;
+    }
 
-		while(!$this->transactionsToRetry->isEmpty()){
-			//Some failed transactions are waiting from the previous execution to be retried
-			$this->transactionQueue->enqueue($this->transactionsToRetry->dequeue());
-		}
+    public function execute()
+    {
+        /** @var Transaction[] */
+        $failed = [];
 
-		if(!$this->transactionQueue->isEmpty()){
-			$this->player->getServer()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
-		}else{
-			return;
-		}
+        while (!$this->transactionsToRetry->isEmpty()) {
+            //Some failed transactions are waiting from the previous execution to be retried
+            $this->transactionQueue->enqueue($this->transactionsToRetry->dequeue());
+        }
 
-		while(!$this->transactionQueue->isEmpty()){
-			$transaction = $this->transactionQueue->dequeue();
+        if (!$this->transactionQueue->isEmpty()) {
+            $this->player->getServer()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
+        } else {
+            return;
+        }
 
-			if($ev->isCancelled()){
-				$this->transactionCount -= 1;
-				$transaction->sendSlotUpdate($this->player); //Send update back to client for cancelled transaction
-				unset($this->inventories[spl_object_hash($transaction)]);
-				continue;
-			}elseif(!$transaction->execute($this->player)){
-				$transaction->addFailure();
-				if($transaction->getFailures() >= self::DEFAULT_ALLOWED_RETRIES){
-					/* Transaction failed completely after several retries, hold onto it to send a slot update */
-					$this->transactionCount -= 1;
-					$failed[] = $transaction;
-				}else{
-					/* Add the transaction to the back of the queue to be retried on the next tick */
-					$this->transactionsToRetry->enqueue($transaction);
-				}
-				continue;
-			}
+        while (!$this->transactionQueue->isEmpty()) {
+            $transaction = $this->transactionQueue->dequeue();
 
-			$this->transactionCount -= 1;
-			$transaction->setSuccess();
-			$transaction->sendSlotUpdate($this->player);
-			unset($this->inventories[spl_object_hash($transaction)]);
-		}
+            if ($ev->isCancelled()) {
+                $this->transactionCount -= 1;
+                $transaction->sendSlotUpdate($this->player); //Send update back to client for cancelled transaction
+                unset($this->inventories[spl_object_hash($transaction)]);
+                continue;
+            } elseif (!$transaction->execute($this->player)) {
+                $transaction->addFailure();
+                if ($transaction->getFailures() >= self::DEFAULT_ALLOWED_RETRIES) {
+                    /* Transaction failed completely after several retries, hold onto it to send a slot update */
+                    $this->transactionCount -= 1;
+                    $failed[] = $transaction;
+                } else {
+                    /* Add the transaction to the back of the queue to be retried on the next tick */
+                    $this->transactionsToRetry->enqueue($transaction);
+                }
+                continue;
+            }
 
-		foreach($failed as $f){
-			$f->sendSlotUpdate($this->player);
-			unset($this->inventories[spl_object_hash($f)]);
-		}
-	}
+            $this->transactionCount -= 1;
+            $transaction->setSuccess();
+            $transaction->sendSlotUpdate($this->player);
+            unset($this->inventories[spl_object_hash($transaction)]);
+        }
+
+        foreach ($failed as $f) {
+            $f->sendSlotUpdate($this->player);
+            unset($this->inventories[spl_object_hash($f)]);
+        }
+    }
 }

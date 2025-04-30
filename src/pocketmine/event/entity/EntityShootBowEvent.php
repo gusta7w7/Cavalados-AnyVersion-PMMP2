@@ -27,76 +27,84 @@ use pocketmine\entity\Projectile;
 use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 
-class EntityShootBowEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
+use function count;
 
-	/** @var Item */
-	private $bow;
-	/** @var Projectile */
-	private $projectile;
-	/** @var float */
-	private $force;
+class EntityShootBowEvent extends EntityEvent implements Cancellable
+{
+    public static $handlerList = null;
 
-	/**
-	 * @param Living     $shooter
-	 * @param Item       $bow
-	 * @param Projectile $projectile
-	 * @param float      $force
-	 */
-	public function __construct(Living $shooter, Item $bow, Projectile $projectile, $force){
-		$this->entity = $shooter;
-		$this->bow = $bow;
-		$this->projectile = $projectile;
-		$this->force = $force;
-	}
+    /** @var Item */
+    private $bow;
+    /** @var Projectile */
+    private $projectile;
+    /** @var float */
+    private $force;
 
-	/**
-	 * @return Living
-	 */
-	public function getEntity(){
-		return $this->entity;
-	}
+    /**
+     * @param Living     $shooter
+     * @param Item       $bow
+     * @param Projectile $projectile
+     * @param float      $force
+     */
+    public function __construct(Living $shooter, Item $bow, Projectile $projectile, $force)
+    {
+        $this->entity = $shooter;
+        $this->bow = $bow;
+        $this->projectile = $projectile;
+        $this->force = $force;
+    }
 
-	/**
-	 * @return Item
-	 */
-	public function getBow(){
-		return $this->bow;
-	}
+    /**
+     * @return Living
+     */
+    public function getEntity()
+    {
+        return $this->entity;
+    }
 
-	/**
-	 * @return Entity|Projectile
-	 */
-	public function getProjectile(){
-		return $this->projectile;
-	}
+    /**
+     * @return Item
+     */
+    public function getBow()
+    {
+        return $this->bow;
+    }
 
-	/**
-	 * @param Entity $projectile
-	 */
-	public function setProjectile(Entity $projectile){
-		if($projectile !== $this->projectile){
-			if(count($this->projectile->getViewers()) === 0){
-				$this->projectile->kill();
-				$this->projectile->close();
-			}
-			$this->projectile = $projectile;
-		}
-	}
+    /**
+     * @return Entity|Projectile
+     */
+    public function getProjectile()
+    {
+        return $this->projectile;
+    }
 
-	/**
-	 * @return float
-	 */
-	public function getForce(){
-		return $this->force;
-	}
+    /**
+     * @param Entity $projectile
+     */
+    public function setProjectile(Entity $projectile)
+    {
+        if ($projectile !== $this->projectile) {
+            if (count($this->projectile->getViewers()) === 0) {
+                $this->projectile->kill();
+                $this->projectile->close();
+            }
+            $this->projectile = $projectile;
+        }
+    }
 
-	/**
-	 * @param float $force
-	 */
-	public function setForce($force){
-		$this->force = $force;
-	}
+    /**
+     * @return float
+     */
+    public function getForce()
+    {
+        return $this->force;
+    }
 
-
+    /**
+     * @param float $force
+     */
+    public function setForce($force)
+    {
+        $this->force = $force;
+    }
 }

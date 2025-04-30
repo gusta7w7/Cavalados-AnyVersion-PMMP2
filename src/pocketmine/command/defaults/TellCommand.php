@@ -2,8 +2,8 @@
 
 /*
  *
- *    ____ _                   _                   
- *  / ___| | _____      _____| |_ ___  _ __   ___ 
+ *    ____ _                   _
+ *  / ___| | _____      _____| |_ ___  _ __   ___
  * | |  _| |/ _ \ \ /\ / / __| __/ _ \| '_ \ / _ \
  * | |_| | | (_) \ V  V /\__ \ || (_) | | | |  __/
  *  \____|_|\___/ \_/\_/ |___/\__\___/|_| |_|\___|
@@ -25,45 +25,52 @@ use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class TellCommand extends VanillaCommand{
+use function array_shift;
+use function count;
+use function implode;
+use function strtolower;
 
-	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.tell.description",
-			"%commands.message.usage",
-			["w", "whisper", "msg", "m", "message"]
-		);
-		$this->setPermission("pocketmine.command.tell");
-	}
+class TellCommand extends VanillaCommand
+{
+    public function __construct($name)
+    {
+        parent::__construct(
+            $name,
+            "%pocketmine.command.tell.description",
+            "%commands.message.usage",
+            ["w", "whisper", "msg", "m", "message"]
+        );
+        $this->setPermission("pocketmine.command.tell");
+    }
 
-	public function execute(CommandSender $sender, $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
+    public function execute(CommandSender $sender, $currentAlias, array $args)
+    {
+        if (!$this->testPermission($sender)) {
+            return true;
+        }
 
-		if(count($args) < 2){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+        if (count($args) < 2) {
+            $sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
-			return false;
-		}
+            return false;
+        }
 
-		$name = strtolower(array_shift($args));
+        $name = strtolower(array_shift($args));
 
-		$player = $sender->getServer()->getPlayer($name);
+        $player = $sender->getServer()->getPlayer($name);
 
-		if($player === $sender){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.message.sameTarget"));
-			return true;
-		}
+        if ($player === $sender) {
+            $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.message.sameTarget"));
+            return true;
+        }
 
-		if($player instanceof Player){
-			$sender->sendMessage("§a» §7(§e".$sender->getName()." §8»§e " . $player->getName() . "§7)§f " . implode(" ", $args));
-			$player->sendMessage("§a» §7(§e" . ($sender instanceof Player ? $sender->getName() : $sender->getName()) . " §8»§e ".$player->getName()."§7)§f " . implode(" ", $args));
-		}else{
-			$sender->sendMessage(new TranslationContainer("commands.generic.player.notFound"));
-		}
+        if ($player instanceof Player) {
+            $sender->sendMessage("§a» §7(§e" . $sender->getName() . " §8»§e " . $player->getName() . "§7)§f " . implode(" ", $args));
+            $player->sendMessage("§a» §7(§e" . ($sender instanceof Player ? $sender->getName() : $sender->getName()) . " §8»§e " . $player->getName() . "§7)§f " . implode(" ", $args));
+        } else {
+            $sender->sendMessage(new TranslationContainer("commands.generic.player.notFound"));
+        }
 
-		return true;
-	}
+        return true;
+    }
 }

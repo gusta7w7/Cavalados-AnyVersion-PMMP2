@@ -24,8 +24,15 @@ namespace pocketmine\entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 
-abstract class FlyingAnimal extends Creature implements Ageable{
+use function abs;
+use function atan2;
+use function mt_rand;
+use function sqrt;
 
+use const M_PI;
+
+abstract class FlyingAnimal extends Creature implements Ageable
+{
     protected $gravity = 0;
     protected $drag = 0.02;
 
@@ -37,14 +44,15 @@ abstract class FlyingAnimal extends Creature implements Ageable{
     private $switchDirectionTicker = 0;
     public $switchDirectionTicks = 300;
 
-    public function onUpdate($currentTick){
-        if($this->closed !== false){
+    public function onUpdate($currentTick)
+    {
+        if ($this->closed !== false) {
             return false;
         }
         if ($this->willMove(100)) {
-            if(++$this->switchDirectionTicker === $this->switchDirectionTicks){
+            if (++$this->switchDirectionTicker === $this->switchDirectionTicks) {
                 $this->switchDirectionTicker = 0;
-                if(mt_rand(0, 100) < 50){
+                if (mt_rand(0, 100) < 50) {
                     $this->flyDirection = null;
                 }
             }
@@ -53,20 +61,20 @@ abstract class FlyingAnimal extends Creature implements Ageable{
 
             $this->timings->startTiming();
 
-            if($this->isAlive()){
+            if ($this->isAlive()) {
 
-                if($this->y > $this->highestY and $this->flyDirection !== null){
+                if ($this->y > $this->highestY && $this->flyDirection !== null) {
                     $this->flyDirection->y = -0.5;
                 }
 
-                $inAir = !$this->isInsideOfSolid() and !$this->isInsideOfWater();
-                if(!$inAir){
+                $inAir = !$this->isInsideOfSolid() && !$this->isInsideOfWater();
+                if (!$inAir) {
                     $this->flyDirection = null;
                 }
-                if($this->flyDirection instanceof Vector3){
+                if ($this->flyDirection instanceof Vector3) {
                     //var_dump($this->flyDirection);
                     $this->setMotion($this->flyDirection->multiply($this->flySpeed));
-                }else{
+                } else {
                     $this->flyDirection = $this->generateRandomDirection();
                     $this->flySpeed = mt_rand(50, 100) / 500;
                     $this->setMotion($this->flyDirection);
@@ -97,7 +105,7 @@ abstract class FlyingAnimal extends Creature implements Ageable{
                 $this->yaw = (-atan2($this->motionX, $this->motionZ) * 180 / M_PI);
                 $this->pitch = (-atan2($f, $this->motionY) * 180 / M_PI);
 
-                if($this->onGround and $this->flyDirection instanceof Vector3){
+                if ($this->onGround && $this->flyDirection instanceof Vector3) {
                     $this->flyDirection->y *= -1;
                 }
 
@@ -108,26 +116,30 @@ abstract class FlyingAnimal extends Creature implements Ageable{
         //parent::entityBaseTick();
         $this->timings->stopTiming();
 
-        return !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
+        return !$this->onGround || abs($this->motionX) > 0.00001 || abs($this->motionY) > 0.00001 || abs($this->motionZ) > 0.00001;
     }
 
-    private function generateRandomDirection(){
+    private function generateRandomDirection()
+    {
         return new Vector3(mt_rand(-1000, 1000) / 1000, mt_rand(-500, 500) / 1000, mt_rand(-1000, 1000) / 1000);
     }
 
-	public function initEntity(){
-		parent::initEntity();
-		if($this->getDataProperty(self::DATA_AGEABLE_FLAGS) === null){
-			$this->setDataProperty(self::DATA_AGEABLE_FLAGS, self::DATA_TYPE_BYTE, 0);
-		}
-	}
+    public function initEntity()
+    {
+        parent::initEntity();
+        if ($this->getDataProperty(self::DATA_AGEABLE_FLAGS) === null) {
+            $this->setDataProperty(self::DATA_AGEABLE_FLAGS, self::DATA_TYPE_BYTE, 0);
+        }
+    }
 
-	public function isBaby(){
-		return $this->getDataFlag(self::DATA_AGEABLE_FLAGS, self::DATA_FLAG_BABY);
-	}
+    public function isBaby()
+    {
+        return $this->getDataFlag(self::DATA_AGEABLE_FLAGS, self::DATA_FLAG_BABY);
+    }
 
-    public function attack($damage, EntityDamageEvent $source){
-        if($source->isCancelled()){
+    public function attack($damage, EntityDamageEvent $source)
+    {
+        if ($source->isCancelled()) {
             return;
         }
         if ($source->getCause() == EntityDamageEvent::CAUSE_FALL) {
@@ -136,5 +148,4 @@ abstract class FlyingAnimal extends Creature implements Ageable{
         }
         parent::attack($damage, $source);
     }
-
 }

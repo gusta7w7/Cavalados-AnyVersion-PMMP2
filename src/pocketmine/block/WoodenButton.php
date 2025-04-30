@@ -27,138 +27,156 @@ use pocketmine\level\sound\ButtonClickSound;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class WoodenButton extends RedstoneSource{
-	protected $id = self::WOODEN_BUTTON;
+class WoodenButton extends RedstoneSource
+{
+    protected $id = self::WOODEN_BUTTON;
 
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
+    public function __construct($meta = 0)
+    {
+        $this->meta = $meta;
+    }
 
-	public function onUpdate($type){
-		if($type == Level::BLOCK_UPDATE_SCHEDULED){
-			if($this->isActivated()) {
-				$this->meta ^= 0x08;
-				$this->getLevel()->setBlock($this, $this, true, false);
-				$this->getLevel()->addSound(new ButtonClickSound($this));
-				$this->deactivate();
-			}
-			return Level::BLOCK_UPDATE_SCHEDULED;
-		}
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$side = $this->getDamage();
-			if($this->isActivated()) $side ^= 0x08;
-			$faces = [
-				0 => 1,
-				1 => 0,
-				2 => 3,
-				3 => 2,
-				4 => 5,
-				5 => 4,
-			];
+    public function onUpdate($type)
+    {
+        if ($type == Level::BLOCK_UPDATE_SCHEDULED) {
+            if ($this->isActivated()) {
+                $this->meta ^= 0x08;
+                $this->getLevel()->setBlock($this, $this, true, false);
+                $this->getLevel()->addSound(new ButtonClickSound($this));
+                $this->deactivate();
+            }
+            return Level::BLOCK_UPDATE_SCHEDULED;
+        }
+        if ($type === Level::BLOCK_UPDATE_NORMAL) {
+            $side = $this->getDamage();
+            if ($this->isActivated()) {
+                $side ^= 0x08;
+            }
+            $faces = [
+                0 => 1,
+                1 => 0,
+                2 => 3,
+                3 => 2,
+                4 => 5,
+                5 => 4,
+            ];
 
-			if($this->getSide($faces[$side]) instanceof Transparent){
-				$this->getLevel()->useBreakOn($this);
+            if ($this->getSide($faces[$side]) instanceof Transparent) {
+                $this->getLevel()->useBreakOn($this);
 
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-		}
-		return false;
-	}
+                return Level::BLOCK_UPDATE_NORMAL;
+            }
+        }
+        return false;
+    }
 
-	public function deactivate(array $ignore = []){
-		parent::deactivate($ignore = []);
-		$faces = [
-			0 => 1,
-			1 => 0,
-			2 => 3,
-			3 => 2,
-			4 => 5,
-			5 => 4,
-		];
-		$side = $this->meta;
-		if($this->isActivated()) $side ^= 0x08;
+    public function deactivate(array $ignore = [])
+    {
+        parent::deactivate($ignore = []);
+        $faces = [
+            0 => 1,
+            1 => 0,
+            2 => 3,
+            3 => 2,
+            4 => 5,
+            5 => 4,
+        ];
+        $side = $this->meta;
+        if ($this->isActivated()) {
+            $side ^= 0x08;
+        }
 
-		$block = $this->getSide($faces[$side])->getSide(Vector3::SIDE_UP);
-		if(!$this->equals($block)){
-			$this->deactivateBlock($block);
-		}
+        $block = $this->getSide($faces[$side])->getSide(Vector3::SIDE_UP);
+        if (!$this->equals($block)) {
+            $this->deactivateBlock($block);
+        }
 
-		if($side != 1){
-			$this->deactivateBlock($this->getSide($faces[$side], 2));
-		}
+        if ($side != 1) {
+            $this->deactivateBlock($this->getSide($faces[$side], 2));
+        }
 
-		$this->checkTorchOff($this->getSide($faces[$side]),[$this->getOppositeSide($faces[$side])]);
-	}
+        $this->checkTorchOff($this->getSide($faces[$side]), [$this->getOppositeSide($faces[$side])]);
+    }
 
-	public function activate(array $ignore = []){
-		parent::activate($ignore = []);
-		$faces = [
-				0 => 1,
-				1 => 0,
-				2 => 3,
-				3 => 2,
-				4 => 5,
-				5 => 4,
-		];
-		
-		$side = $this->meta;
-		if($this->isActivated()) $side ^= 0x08;
+    public function activate(array $ignore = [])
+    {
+        parent::activate($ignore = []);
+        $faces = [
+            0 => 1,
+            1 => 0,
+            2 => 3,
+            3 => 2,
+            4 => 5,
+            5 => 4,
+        ];
 
-		$block = $this->getSide($faces[$side])->getSide(Vector3::SIDE_UP);
-		if(!$this->equals($block)){
-			$this->activateBlock($block);
-		}
+        $side = $this->meta;
+        if ($this->isActivated()) {
+            $side ^= 0x08;
+        }
 
-		if($side != 1){
-			$block = $this->getSide($faces[$side], 2);
-			$this->activateBlock($block);
-		}
+        $block = $this->getSide($faces[$side])->getSide(Vector3::SIDE_UP);
+        if (!$this->equals($block)) {
+            $this->activateBlock($block);
+        }
 
-		$this->checkTorchOn($this->getSide($faces[$side]),[$this->getOppositeSide($faces[$side])]);
-	}
+        if ($side != 1) {
+            $block = $this->getSide($faces[$side], 2);
+            $this->activateBlock($block);
+        }
 
-	public function getName() : string{
-		return "Wooden Button";
-	}
+        $this->checkTorchOn($this->getSide($faces[$side]), [$this->getOppositeSide($faces[$side])]);
+    }
 
-	public function getHardness() {
-		return 0.5;
-	}
+    public function getName() : string
+    {
+        return "Wooden Button";
+    }
 
-	public function onBreak(Item $item){
-		if($this->isActivated()){
-			$this->meta ^= 0x08;
-			$this->getLevel()->setBlock($this, $this, true, false);
-			$this->deactivate();
-		}
-		$this->getLevel()->setBlock($this, new Air(), true, false);
-	}
+    public function getHardness()
+    {
+        return 0.5;
+    }
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($target->isTransparent() === false){
-			$this->meta = $face;
-			$this->getLevel()->setBlock($block, $this, true, false);
-			return true;
-		}
-		return false;
-	}
+    public function onBreak(Item $item)
+    {
+        if ($this->isActivated()) {
+            $this->meta ^= 0x08;
+            $this->getLevel()->setBlock($this, $this, true, false);
+            $this->deactivate();
+        }
+        $this->getLevel()->setBlock($this, new Air(), true, false);
+    }
 
-	public function canBeActivated() : bool {
-		return true;
-	}
+    public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null)
+    {
+        if ($target->isTransparent() === false) {
+            $this->meta = $face;
+            $this->getLevel()->setBlock($block, $this, true, false);
+            return true;
+        }
+        return false;
+    }
 
-	public function isActivated(Block $from = null){
-		return (($this->meta & 0x08) === 0x08);
-	}
+    public function canBeActivated() : bool
+    {
+        return true;
+    }
 
-	public function onActivate(Item $item, Player $player = null){
-		if(!$this->isActivated()){
-			$this->meta ^= 0x08;
-			$this->getLevel()->setBlock($this, $this, true, false);
-			$this->getLevel()->addSound(new ButtonClickSound($this));
-			$this->activate();
-			$this->getLevel()->scheduleUpdate($this, 30);
-		}
-		return true;
-	}
+    public function isActivated(Block $from = null)
+    {
+        return (($this->meta & 0x08) === 0x08);
+    }
+
+    public function onActivate(Item $item, Player $player = null)
+    {
+        if (!$this->isActivated()) {
+            $this->meta ^= 0x08;
+            $this->getLevel()->setBlock($this, $this, true, false);
+            $this->getLevel()->addSound(new ButtonClickSound($this));
+            $this->activate();
+            $this->getLevel()->scheduleUpdate($this, 30);
+        }
+        return true;
+    }
 }

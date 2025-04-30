@@ -1,24 +1,29 @@
 <?php
+
 namespace pocketmine\network\protocol\p70;
 
-use pocketmine\utils\p70\Binary;
+use function chr;
 
-class ChangeDimensionPacket extends DataPacket{
-	const NETWORK_ID = Info::CHANGE_DIMENSION_PACKET;
+class ChangeDimensionPacket extends DataPacket
+{
+    const NETWORK_ID = Info::CHANGE_DIMENSION_PACKET;
 
-	const NORMAL = 0;
-	const NETHER = 1;
+    const NORMAL = 0;
+    const NETHER = 1;
 
-	public $dimension;
+    public $dimension;
 
-	public function decode(){
+    public function decode()
+    {
 
-	}
+    }
 
-	public function encode(){
-		$this->buffer = chr(self::NETWORK_ID); $this->offset = 0;;
-		$this->buffer .= chr($this->dimension);
-		$this->buffer .= chr(0);
-	}
-
+    public function encode()
+    {
+        $this->buffer = chr(self::NETWORK_ID);
+        $this->offset = 0;
+        ;
+        $this->buffer .= chr($this->dimension);
+        $this->buffer .= chr(0);
+    }
 }

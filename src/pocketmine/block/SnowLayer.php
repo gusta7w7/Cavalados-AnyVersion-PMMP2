@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -26,61 +26,68 @@ use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\Player;
 
-class SnowLayer extends Flowable{
+class SnowLayer extends Flowable
+{
+    protected $id = self::SNOW_LAYER;
 
-	protected $id = self::SNOW_LAYER;
+    public function __construct($meta = 0)
+    {
+        $this->meta = $meta;
+    }
 
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
+    public function getName() : string
+    {
+        return "Snow Layer";
+    }
 
-	public function getName() : string{
-		return "Snow Layer";
-	}
+    public function canBeReplaced()
+    {
+        return true;
+    }
 
-	public function canBeReplaced(){
-		return true;
-	}
+    public function getHardness()
+    {
+        return 0.1;
+    }
 
-	public function getHardness() {
-		return 0.1;
-	}
+    public function getToolType()
+    {
+        return Tool::TYPE_SHOVEL;
+    }
 
-	public function getToolType(){
-		return Tool::TYPE_SHOVEL;
-	}
+    public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null)
+    {
+        $down = $this->getSide(0);
+        if ($down->isSolid()) {
+            $this->getLevel()->setBlock($block, $this, true);
 
+            return true;
+        }
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$down = $this->getSide(0);
-		if($down->isSolid()){
-			$this->getLevel()->setBlock($block, $this, true);
+        return false;
+    }
 
-			return true;
-		}
+    public function onUpdate($type)
+    {
+        if ($type === Level::BLOCK_UPDATE_NORMAL) {
+            if ($this->getSide(0)->getId() === self::AIR) { //Replace with common break method
+                $this->getLevel()->setBlock($this, new Air(), true);
 
-		return false;
-	}
+                return Level::BLOCK_UPDATE_NORMAL;
+            }
+        }
 
-	public function onUpdate($type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getId() === self::AIR){ //Replace with common break method
-				$this->getLevel()->setBlock($this, new Air(), true);
+        return false;
+    }
 
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-		}
+    public function getDrops(Item $item) : array
+    {
+        if ($item->isShovel() !== false) {
+            return [
+                [Item::SNOWBALL, 0, 1],
+            ];
+        }
 
-		return false;
-	}
-
-	public function getDrops(Item $item) : array {
-		if($item->isShovel() !== false){
-			return [
-				[Item::SNOWBALL, 0, 1],
-			];
-		}
-
-		return [];
-	}
+        return [];
+    }
 }

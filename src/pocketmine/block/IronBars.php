@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -24,35 +24,38 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
-class IronBars extends Thin{
+class IronBars extends Thin
+{
+    protected $id = self::IRON_BARS;
 
-	protected $id = self::IRON_BARS;
+    public function __construct()
+    {
 
-	public function __construct(){
+    }
 
-	}
+    public function getName() : string
+    {
+        return "Iron Bars";
+    }
 
-	public function getName() : string{
-		return "Iron Bars";
-	}
+    public function getHardness()
+    {
+        return 5;
+    }
 
-	public function getHardness() {
-		return 5;
-	}
+    public function getToolType()
+    {
+        return Tool::TYPE_PICKAXE;
+    }
 
-	public function getToolType(){
-		return Tool::TYPE_PICKAXE;
-	}
-
-	public function getDrops(Item $item) : array {
-		if($item->isPickaxe() >= 1){
-			return [
-				[Item::IRON_BARS, 0, 1],
-			];
-		}else{
-			return [];
-		}
-	}
-
+    public function getDrops(Item $item) : array
+    {
+        if ($item->isPickaxe() >= 1) {
+            return [
+                [Item::IRON_BARS, 0, 1],
+            ];
+        } else {
+            return [];
+        }
+    }
 }
-
