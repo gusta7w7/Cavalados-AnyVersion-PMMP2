@@ -26,141 +26,156 @@ use pocketmine\entity\Living;
 use pocketmine\plugin\PluginManager;
 use pocketmine\Server;
 
-class TimingsHandler{
+use function count;
+use function fwrite;
+use function microtime;
+use function round;
+use function spl_object_hash;
 
-	/** @var TimingsHandler[] */
-	private static $HANDLERS = [];
+use const PHP_EOL;
 
-	private $name;
-	/** @var TimingsHandler */
-	private $parent = null;
+class TimingsHandler
+{
+    /** @var TimingsHandler[] */
+    private static $HANDLERS = [];
 
-	private $count = 0;
-	private $curCount = 0;
-	private $start = 0;
-	private $timingDepth = 0;
-	private $totalTime = 0;
-	private $curTickTotal = 0;
-	private $violations = 0;
+    private $name;
+    /** @var TimingsHandler */
+    private $parent = null;
 
-	/**
-	 * @param string         $name
-	 * @param TimingsHandler $parent
-	 */
-	public function __construct($name, TimingsHandler $parent = null){
-		$this->name = $name;
-		if($parent !== null){
-			$this->parent = $parent;
-		}
+    private $count = 0;
+    private $curCount = 0;
+    private $start = 0;
+    private $timingDepth = 0;
+    private $totalTime = 0;
+    private $curTickTotal = 0;
+    private $violations = 0;
 
-		self::$HANDLERS[spl_object_hash($this)] = $this;
-	}
+    /**
+     * @param string         $name
+     * @param TimingsHandler $parent
+     */
+    public function __construct($name, TimingsHandler $parent = null)
+    {
+        $this->name = $name;
+        if ($parent !== null) {
+            $this->parent = $parent;
+        }
 
-	public static function printTimings($fp){
-		fwrite($fp, "Minecraft" . PHP_EOL);
+        self::$HANDLERS[spl_object_hash($this)] = $this;
+    }
 
-		foreach(self::$HANDLERS as $timings){
-			$time = $timings->totalTime;
-			$count = $timings->count;
-			if($count === 0){
-				continue;
-			}
+    public static function printTimings($fp)
+    {
+        fwrite($fp, "Minecraft" . PHP_EOL);
 
-			$avg = $time / $count;
+        foreach (self::$HANDLERS as $timings) {
+            $time = $timings->totalTime;
+            $count = $timings->count;
+            if ($count === 0) {
+                continue;
+            }
 
-			fwrite($fp, "    " . $timings->name . " Time: " . round($time * 1000000000) . " Count: " . $count . " Avg: " . round($avg * 1000000000) . " Violations: " . $timings->violations . PHP_EOL);
-		}
+            $avg = $time / $count;
 
-		fwrite($fp, "# Version " . Server::getInstance()->getVersion() . PHP_EOL);
-		fwrite($fp, "# " . Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion() . PHP_EOL);
+            fwrite($fp, "    " . $timings->name . " Time: " . round($time * 1000000000) . " Count: " . $count . " Avg: " . round($avg * 1000000000) . " Violations: " . $timings->violations . PHP_EOL);
+        }
 
-		$entities = 0;
-		$livingEntities = 0;
-		foreach(Server::getInstance()->getLevels() as $level){
-			$entities += count($level->getEntities());
-			foreach($level->getEntities() as $e){
-				if($e instanceof Living){
-					++$livingEntities;
-				}
-			}
-		}
+        fwrite($fp, "# Version " . Server::getInstance()->getVersion() . PHP_EOL);
+        fwrite($fp, "# " . Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion() . PHP_EOL);
 
-		fwrite($fp, "# Entities " . $entities . PHP_EOL);
-		fwrite($fp, "# LivingEntities " . $livingEntities . PHP_EOL);
-	}
+        $entities = 0;
+        $livingEntities = 0;
+        foreach (Server::getInstance()->getLevels() as $level) {
+            $entities += count($level->getEntities());
+            foreach ($level->getEntities() as $e) {
+                if ($e instanceof Living) {
+                    ++$livingEntities;
+                }
+            }
+        }
 
-	public static function reload(){
-		if(Server::getInstance()->getPluginManager()->useTimings()){
-			foreach(self::$HANDLERS as $timings){
-				$timings->reset();
-			}
-			TimingsCommand::$timingStart = microtime(true);
-		}
-	}
+        fwrite($fp, "# Entities " . $entities . PHP_EOL);
+        fwrite($fp, "# LivingEntities " . $livingEntities . PHP_EOL);
+    }
 
-	public static function tick($measure = true){
-		if(PluginManager::$useTimings){
-			if($measure){
-				foreach(self::$HANDLERS as $timings){
-					if($timings->curTickTotal > 0.05){
-						$timings->violations += round($timings->curTickTotal / 0.05);
-					}
-					$timings->curTickTotal = 0;
-					$timings->curCount = 0;
-					$timings->timingDepth = 0;
-				}
-			}else{
-				foreach(self::$HANDLERS as $timings){
-					$timings->totalTime -= $timings->curTickTotal;
-					$timings->count -= $timings->curCount;
+    public static function reload()
+    {
+        if (Server::getInstance()->getPluginManager()->useTimings()) {
+            foreach (self::$HANDLERS as $timings) {
+                $timings->reset();
+            }
+            TimingsCommand::$timingStart = microtime(true);
+        }
+    }
 
-					$timings->curTickTotal = 0;
-					$timings->curCount = 0;
-					$timings->timingDepth = 0;
-				}
-			}
-		}
-	}
+    public static function tick($measure = true)
+    {
+        if (PluginManager::$useTimings) {
+            if ($measure) {
+                foreach (self::$HANDLERS as $timings) {
+                    if ($timings->curTickTotal > 0.05) {
+                        $timings->violations += round($timings->curTickTotal / 0.05);
+                    }
+                    $timings->curTickTotal = 0;
+                    $timings->curCount = 0;
+                    $timings->timingDepth = 0;
+                }
+            } else {
+                foreach (self::$HANDLERS as $timings) {
+                    $timings->totalTime -= $timings->curTickTotal;
+                    $timings->count -= $timings->curCount;
 
-	public function startTiming(){
-		if(PluginManager::$useTimings and ++$this->timingDepth === 1){
-			$this->start = microtime(true);
-			if($this->parent !== null and ++$this->parent->timingDepth === 1){
-				$this->parent->start = $this->start;
-			}
-		}
-	}
+                    $timings->curTickTotal = 0;
+                    $timings->curCount = 0;
+                    $timings->timingDepth = 0;
+                }
+            }
+        }
+    }
 
-	public function stopTiming(){
-		if(PluginManager::$useTimings){
-			if(--$this->timingDepth !== 0 or $this->start === 0){
-				return;
-			}
+    public function startTiming()
+    {
+        if (PluginManager::$useTimings && ++$this->timingDepth === 1) {
+            $this->start = microtime(true);
+            if ($this->parent !== null && ++$this->parent->timingDepth === 1) {
+                $this->parent->start = $this->start;
+            }
+        }
+    }
 
-			$diff = microtime(true) - $this->start;
-			$this->totalTime += $diff;
-			$this->curTickTotal += $diff;
-			++$this->curCount;
-			++$this->count;
-			$this->start = 0;
-			if($this->parent !== null){
-				$this->parent->stopTiming();
-			}
-		}
-	}
+    public function stopTiming()
+    {
+        if (PluginManager::$useTimings) {
+            if (--$this->timingDepth !== 0 || $this->start === 0) {
+                return;
+            }
 
-	public function reset(){
-		$this->count = 0;
-		$this->curCount = 0;
-		$this->violations = 0;
-		$this->curTickTotal = 0;
-		$this->totalTime = 0;
-		$this->start = 0;
-		$this->timingDepth = 0;
-	}
+            $diff = microtime(true) - $this->start;
+            $this->totalTime += $diff;
+            $this->curTickTotal += $diff;
+            ++$this->curCount;
+            ++$this->count;
+            $this->start = 0;
+            if ($this->parent !== null) {
+                $this->parent->stopTiming();
+            }
+        }
+    }
 
-	public function remove(){
-		unset(self::$HANDLERS[spl_object_hash($this)]);
-	}
+    public function reset()
+    {
+        $this->count = 0;
+        $this->curCount = 0;
+        $this->violations = 0;
+        $this->curTickTotal = 0;
+        $this->totalTime = 0;
+        $this->start = 0;
+        $this->timingDepth = 0;
+    }
 
+    public function remove()
+    {
+        unset(self::$HANDLERS[spl_object_hash($this)]);
+    }
 }

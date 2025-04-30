@@ -24,44 +24,52 @@ namespace pocketmine\level\format;
 use pocketmine\Server;
 use pocketmine\utils\LevelException;
 
-abstract class LevelProviderManager{
-	protected static $providers = [];
+use function is_subclass_of;
+use function strtolower;
+use function trim;
 
-	/**
-	 * @param Server $server
-	 * @param string $class
-	 *
-	 * @throws LevelException
-	 */
-	public static function addProvider(Server $server, $class){
-		if(!is_subclass_of($class, LevelProvider::class)){
-			throw new LevelException("Class is not a subclass of LevelProvider");
-		}
-		/** @var LevelProvider $class */
-		self::$providers[strtolower($class::getProviderName())] = $class;
-	}
+abstract class LevelProviderManager
+{
+    protected static $providers = [];
 
-	/**
-	 * Returns a LevelProvider class for this path, or null
-	 *
-	 * @param string $path
-	 *
-	 * @return string
-	 */
-	public static function getProvider($path){
-		foreach(self::$providers as $provider){
-			/** @var $provider LevelProvider */
-			if($provider::isValid($path)){
-				return $provider;
-			}
-		}
+    /**
+     * @param Server $server
+     * @param string $class
+     *
+     * @throws LevelException
+     */
+    public static function addProvider(Server $server, $class)
+    {
+        if (!is_subclass_of($class, LevelProvider::class)) {
+            throw new LevelException("Class is not a subclass of LevelProvider");
+        }
+        /** @var LevelProvider $class */
+        self::$providers[strtolower($class::getProviderName())] = $class;
+    }
 
-		return null;
-	}
+    /**
+     * Returns a LevelProvider class for this path, or null
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public static function getProvider($path)
+    {
+        foreach (self::$providers as $provider) {
+            /** @var $provider LevelProvider */
+            if ($provider::isValid($path)) {
+                return $provider;
+            }
+        }
 
-	public static function getProviderByName($name){
-		$name = trim(strtolower($name));
+        return null;
+    }
 
-		return isset(self::$providers[$name]) ? self::$providers[$name] : null;
-	}
+    public static function getProviderByName($name)
+    {
+        $name = trim(strtolower($name));
+
+        return self::$providers[$name] ?? null;
+    }
 }

@@ -24,102 +24,112 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Hopper as TileHopper;
 use pocketmine\tile\Tile;
 
-class Hopper extends Transparent{
+class Hopper extends Transparent
+{
+    protected $id = self::HOPPER_BLOCK;
 
-	protected $id = self::HOPPER_BLOCK;
+    public function __construct($meta = 0)
+    {
+        $this->meta = $meta;
+    }
 
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
+    public function canBeActivated() : bool
+    {
+        return true;
+    }
 
-	public function canBeActivated(): bool{
-		return true;
-	}
+    public function getToolType()
+    {
+        return Tool::TYPE_PICKAXE;
+    }
 
-	public function getToolType(){
-		return Tool::TYPE_PICKAXE;
-	}
+    public function getName() : string
+    {
+        return "Hopper";
+    }
 
-	public function getName() : string{
-		return "Hopper";
-	}
+    public function getHardness()
+    {
+        return 3;
+    }
 
-	public function getHardness(){
-		return 3;
-	}
+    public function onActivate(Item $item, Player $player = null)
+    {
+        if ($player instanceof Player) {
+            $t = $this->getLevel()->getTile($this);
+            if ($t instanceof TileHopper) {
+                if ($t->hasLock() && !$t->checkLock($item->getCustomName())) {
+                    $player->getServer()->getLogger()->debug($player->getName() . " attempted to open a locked hopper");
+                    return true;
+                }
+                $player->addWindow($t->getInventory());
+            }
+        }
+        return true;
+    }
 
-	public function onActivate(Item $item, Player $player = null){
-		if($player instanceof Player){
-			$t = $this->getLevel()->getTile($this);
-			if($t instanceof TileHopper){
-				if($t->hasLock() and !$t->checkLock($item->getCustomName())){
-					$player->getServer()->getLogger()->debug($player->getName() . " attempted to open a locked hopper");
-					return true;
-				}
-				$player->addWindow($t->getInventory());
-			}
-		}
-		return true;
-	}
-	
-	public function activate(){
-		//TODO: Hopper content freezing (requires basic redstone system upgrade)
-	}
-	
-	public function getTarget(){
-		return $this->target;
-	}
+    public function activate()
+    {
+        //TODO: Hopper content freezing (requires basic redstone system upgrade)
+    }
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$faces = [
-			0 => 0,
-			1 => 0,
-			2 => 3,
-			3 => 2,
-			4 => 5,
-			5 => 4
-		];
-		$this->meta = $faces[$face];
-		$this->getLevel()->setBlock($block, $this, true, true);
+    public function getTarget()
+    {
+        return $this->target;
+    }
 
-		$nbt = new CompoundTag("", [
-			new ListTag("Items", []),
-			new StringTag("id", Tile::HOPPER),
-			new IntTag("x", $this->x),
-			new IntTag("y", $this->y),
-			new IntTag("z", $this->z)
-		]);
-		$nbt->Items->setTagType(NBT::TAG_Compound);
+    public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null)
+    {
+        $faces = [
+            0 => 0,
+            1 => 0,
+            2 => 3,
+            3 => 2,
+            4 => 5,
+            5 => 4
+        ];
+        $this->meta = $faces[$face];
+        $this->getLevel()->setBlock($block, $this, true, true);
 
-		if($item->hasCustomName()){
-			$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
-		}
+        $nbt = new CompoundTag("", [
+            new ListTag("Items", []),
+            new StringTag("id", Tile::HOPPER),
+            new IntTag("x", $this->x),
+            new IntTag("y", $this->y),
+            new IntTag("z", $this->z)
+        ]);
+        $nbt->Items->setTagType(NBT::TAG_Compound);
 
-		if($item->hasCustomBlockData()){
-			foreach($item->getCustomBlockData() as $key => $v){
-				$nbt->{$key} = $v;
-			}
-		}
+        if ($item->hasCustomName()) {
+            $nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
+        }
 
-		$t = Tile::createTile(Tile::HOPPER, $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
+        if ($item->hasCustomBlockData()) {
+            foreach ($item->getCustomBlockData() as $key => $v) {
+                $nbt->{$key} = $v;
+            }
+        }
 
-		return true;
-	}
+        $t = Tile::createTile(Tile::HOPPER, $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 
-	public function getDrops(Item $item) : array {
-		if($item->isPickaxe() >= 1){
-			return [
-				[Item::HOPPER, 0, 1],
-			];
-		}else{
-			return [];
-		}
-	}
+        return true;
+    }
+
+    public function getDrops(Item $item) : array
+    {
+        if ($item->isPickaxe() >= 1) {
+            return [
+                [Item::HOPPER, 0, 1],
+            ];
+        } else {
+            return [];
+        }
+    }
 }

@@ -2,8 +2,8 @@
 
 /*
  *
- *    ____ _                   _                   
- *  / ___| | _____      _____| |_ ___  _ __   ___ 
+ *    ____ _                   _
+ *  / ___| | _____      _____| |_ ___  _ __   ___
  * | |  _| |/ _ \ \ /\ / / __| __/ _ \| '_ \ / _ \
  * | |_| | | (_) \ V  V /\__ \ || (_) | | | |  __/
  *  \____|_|\___/ \_/\_/ |___/\__\___/|_| |_|\___|
@@ -25,98 +25,102 @@ use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\utils\TextFormat;
 
-class TeleportCommand extends VanillaCommand{
+use function count;
+use function round;
 
-	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.tp.description",
-			"%commands.tp.usage"
-		);
-		$this->setPermission("pocketmine.command.teleport");
-	}
+class TeleportCommand extends VanillaCommand
+{
+    public function __construct($name)
+    {
+        parent::__construct(
+            $name,
+            "%pocketmine.command.tp.description",
+            "%commands.tp.usage"
+        );
+        $this->setPermission("pocketmine.command.teleport");
+    }
 
-	public function execute(CommandSender $sender, $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
+    public function execute(CommandSender $sender, $currentAlias, array $args)
+    {
+        if (!$this->testPermission($sender)) {
+            return true;
+        }
 
-		if(count($args) < 1 or count($args) > 6){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+        if (count($args) < 1 || count($args) > 6) {
+            $sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
-			return true;
-		}
+            return true;
+        }
 
-		$target = null;
-		$origin = $sender;
+        $target = null;
+        $origin = $sender;
 
-		if(count($args) === 1 or count($args) === 3){
-			if($sender instanceof Player){
-				$target = $sender;
-			}else{
-				$sender->sendMessage("§c» §fУкажите игрока!");
+        if (count($args) === 1 || count($args) === 3) {
+            if ($sender instanceof Player) {
+                $target = $sender;
+            } else {
+                $sender->sendMessage("§c» §fУкажите игрока!");
 
-				return true;
-			}
-			if(count($args) === 1){
-				$target = $sender->getServer()->getPlayer($args[0]);
-				if($target === null){
-					$sender->sendMessage("§c» §fИгрок не найден!");
+                return true;
+            }
+            if (count($args) === 1) {
+                $target = $sender->getServer()->getPlayer($args[0]);
+                if ($target === null) {
+                    $sender->sendMessage("§c» §fИгрок не найден!");
 
-					return true;
-				}
-			}
-		}else{
-			$target = $sender->getServer()->getPlayer($args[0]);
-			if($target === null){
-				$sender->sendMessage("§c» §fИгрок не найден!");
+                    return true;
+                }
+            }
+        } else {
+            $target = $sender->getServer()->getPlayer($args[0]);
+            if ($target === null) {
+                $sender->sendMessage("§c» §fИгрок не найден!");
 
-				return true;
-			}
-			if(count($args) === 2){
-				$origin = $target;
-				$target = $sender->getServer()->getPlayer($args[1]);
-				if($target === null){
-					$sender->sendMessage("§c» §fИгрок не найден!");
+                return true;
+            }
+            if (count($args) === 2) {
+                $origin = $target;
+                $target = $sender->getServer()->getPlayer($args[1]);
+                if ($target === null) {
+                    $sender->sendMessage("§c» §fИгрок не найден!");
 
-					return true;
-				}
-			}
-		}
+                    return true;
+                }
+            }
+        }
 
-		if(count($args) < 3){
-			$origin->teleport($target);
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success", [$origin->getName(), $target->getName()]));
+        if (count($args) < 3) {
+            $origin->teleport($target);
+            Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success", [$origin->getName(), $target->getName()]));
 
-			return true;
-		}elseif($target->getLevel() !== null){
-			if(count($args) === 4 or count($args) === 6){
-				$pos = 1;
-			}else{
-				$pos = 0;
-			}
+            return true;
+        } elseif ($target->getLevel() !== null) {
+            if (count($args) === 4 || count($args) === 6) {
+                $pos = 1;
+            } else {
+                $pos = 0;
+            }
 
-			$x = $this->getRelativeDouble($target->x, $sender, $args[$pos++]);
-			$y = $this->getRelativeDouble($target->y, $sender, $args[$pos++], 0, 128);
-			$z = $this->getRelativeDouble($target->z, $sender, $args[$pos++]);
-			$yaw = $target->getYaw();
-			$pitch = $target->getPitch();
+            $x = $this->getRelativeDouble($target->x, $sender, $args[$pos++]);
+            $y = $this->getRelativeDouble($target->y, $sender, $args[$pos++], 0, 128);
+            $z = $this->getRelativeDouble($target->z, $sender, $args[$pos++]);
+            $yaw = $target->getYaw();
+            $pitch = $target->getPitch();
 
-			if(count($args) === 6 or (count($args) === 5 and $pos === 3)){
-				$yaw = $args[$pos++];
-				$pitch = $args[$pos++];
-			}
+            if (count($args) === 6 || (count($args) === 5 && $pos === 3)) {
+                $yaw = $args[$pos++];
+                $pitch = $args[$pos++];
+            }
 
-			$target->teleport(new Vector3($x, $y, $z), $yaw, $pitch);
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success.coordinates", [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
+            $target->teleport(new Vector3($x, $y, $z), $yaw, $pitch);
+            Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success.coordinates", [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
 
-			return true;
-		}
+            return true;
+        }
 
-		$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+        $sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
-		return true;
-	}
+        return true;
+    }
 }

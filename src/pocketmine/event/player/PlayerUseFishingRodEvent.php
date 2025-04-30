@@ -24,20 +24,23 @@ namespace pocketmine\event\player;
 use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
-class PlayerUseFishingRodEvent extends PlayerEvent implements Cancellable{
-	public static $handlerList = null;
+class PlayerUseFishingRodEvent extends PlayerEvent implements Cancellable
+{
+    public static $handlerList = null;
 
-	const ACTION_START_FISHING = 0;
-	const ACTION_STOP_FISHING = 1;
+    const ACTION_START_FISHING = 0;
+    const ACTION_STOP_FISHING = 1;
 
-	private $action;
+    private $action;
 
-	public function __construct(Player $player, int $action = PlayerUseFishingRodEvent::ACTION_START_FISHING){
-		$this->player = $player;
-		$this->action = $action;
-	}
+    public function __construct(Player $player, int $action = PlayerUseFishingRodEvent::ACTION_START_FISHING)
+    {
+        $this->player = $player;
+        $this->action = $action;
+    }
 
-	public function getAction() : int{
-		return $this->action;
-	}
+    public function getAction() : int
+    {
+        return $this->action;
+    }
 }

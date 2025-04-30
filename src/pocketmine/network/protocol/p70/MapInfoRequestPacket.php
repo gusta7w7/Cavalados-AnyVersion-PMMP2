@@ -2,21 +2,21 @@
 
 namespace pocketmine\network\protocol\p70;
 
+class MapInfoRequestPacket extends DataPacket
+{
+    const NETWORK_ID = Info::MAP_INFO_REQUEST_PACKET;
 
-class MapInfoRequestPacket extends DataPacket {
+    /** @var int */
+    public $mapId;
 
-	const NETWORK_ID = Info::MAP_INFO_REQUEST_PACKET;
+    public function decode()
+    {
+        $this->mapId = $this->getLong();
+    }
 
-	/** @var int */
-	public $mapId;
-
-	public function decode(){
-		$this->mapId = $this->getLong();
-	}
-
-	public function encode(){
+    public function encode()
+    {
         $this->reset();
-		$this->putLong($this->mapId);
-	}
-
+        $this->putLong($this->mapId);
+    }
 }

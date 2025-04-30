@@ -21,35 +21,34 @@
 
 namespace pocketmine\inventory;
 
-interface TransactionQueue{
+interface TransactionQueue
+{
+    const DEFAULT_ALLOWED_RETRIES = 5;
 
-	const DEFAULT_ALLOWED_RETRIES = 5;
+    /**
+     * @return Inventory
+     */
+    public function getInventories();
 
-	/**
-	 * @return Inventory
-	 */
-	function getInventories();
+    /**
+     * @return \SplQueue
+     */
+    public function getTransactions();
 
-	/**
-	 * @return \SplQueue
-	 */
-	function getTransactions();
+    /**
+     * @return int
+     */
+    public function getTransactionCount();
 
-	/**
-	 * @return int
-	 */
-	function getTransactionCount();
+    /**
+     * @param Transaction $transaction
+     *
+     * Adds a transaction to the queue
+     */
+    public function addTransaction(Transaction $transaction);
 
-	/**
-	 * @param Transaction $transaction
-	 *
-	 * Adds a transaction to the queue
-	 */
-	function addTransaction(Transaction $transaction);
-
-	/**
-	 * Handles transaction queue execution
-	 */
-	function execute();
-
+    /**
+     * Handles transaction queue execution
+     */
+    public function execute();
 }

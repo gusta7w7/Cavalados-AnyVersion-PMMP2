@@ -2,8 +2,8 @@
 
 /*
  *
- *    ____ _                   _                   
- *  / ___| | _____      _____| |_ ___  _ __   ___ 
+ *    ____ _                   _
+ *  / ___| | _____      _____| |_ ___  _ __   ___
  * | |  _| |/ _ \ \ /\ / / __| __/ _ \| '_ \ / _ \
  * | |_| | | (_) \ V  V /\__ \ || (_) | | | |  __/
  *  \____|_|\___/ \_/\_/ |___/\__\___/|_| |_|\___|
@@ -22,22 +22,20 @@ namespace pocketmine\command;
 
 use pocketmine\permission\Permissible;
 
-interface CommandSender extends Permissible{
+interface CommandSender extends Permissible
+{
+    /**
+     * @param string $message
+     */
+    public function sendMessage($message);
 
-	/**
-	 * @param string $message
-	 */
-	public function sendMessage($message);
+    /**
+     * @return \pocketmine\Server
+     */
+    public function getServer();
 
-	/**
-	 * @return \pocketmine\Server
-	 */
-	public function getServer();
-
-	/**
-	 * @return string
-	 */
-	public function getName();
-
-
+    /**
+     * @return string
+     */
+    public function getName();
 }
