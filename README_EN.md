@@ -84,12 +84,4 @@ For questions, suggestions, or contributions, open an issue on GitHub.
 
 ---
 
-## Contributors
-
-We would like to thank the contributors who have contributed to this project:
-
-[![](https://contrib.rocks/image?repo=gusta7w7/Cavalados-AnyVersion-PMMP2)](https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/graphs/contributors)
-
----
-
 **Project Link:** [https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2](https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2)
