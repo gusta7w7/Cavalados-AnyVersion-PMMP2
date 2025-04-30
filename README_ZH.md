@@ -84,12 +84,4 @@ git clone https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2
 
 ---
 
-## 贡献者
-
-在此，我们要感谢为该项目做出贡献的人员：
-
-[![](https://contrib.rocks/image?repo=gusta7w7/Cavalados-AnyVersion-PMMP2)](https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2/graphs/contributors)
-
----
-
 **项目链接：** [https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2](https://github.com/gusta7w7/Cavalados-AnyVersion-PMMP2)
