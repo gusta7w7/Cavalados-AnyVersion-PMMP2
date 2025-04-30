@@ -22,158 +22,177 @@
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\math\Vector2;
 use pocketmine\Server;
 use pocketmine\utils\UUID;
-use pocketmine\math\Vector2;
 
-class ShapedRecipe implements Recipe{
-	/** @var Item */
-	private $output;
+use function array_fill;
+use function array_key_exists;
+use function count;
+use function strlen;
 
-	private $id = null;
+class ShapedRecipe implements Recipe
+{
+    /** @var Item */
+    private $output;
 
-	/** @var string[] */
-	private $shape = [];
+    private $id = null;
 
-	/** @var Item[][] */
-	private $ingredients = [];
-	/** @var Vector2[][] */
-	private $shapeItems = [];
+    /** @var string[] */
+    private $shape = [];
 
-	/**
-	 * @param Item     $result
-	 * @param string[] $shape
-	 *
-	 * @throws \Throwable
-	 */
-	public function __construct(Item $result, ...$shape){
-		if(count($shape) === 0){
-			throw new \InvalidArgumentException("Must provide a shape");
-		}
-		if(count($shape) > 3){
-			throw new \InvalidStateException("Crafting recipes should be 1, 2, 3 rows, not " . count($shape));
-		}
-		foreach($shape as $y => $row){
-			if(strlen($row) === 0 or strlen($row) > 3){
-				throw new \InvalidStateException("Crafting rows should be 1, 2, 3 characters, not " . count($row));
-			}
-			$this->ingredients[] = array_fill(0, strlen($row), null);
-			$len = strlen($row);
-			for($i = 0; $i < $len; ++$i){
-				$this->shape[$row{$i}] = null;
+    /** @var Item[][] */
+    private $ingredients = [];
+    /** @var Vector2[][] */
+    private $shapeItems = [];
 
-				if(!isset($this->shapeItems[$row{$i}])){
-					$this->shapeItems[$row{$i}] = [new Vector2($i, $y)];
-				}else{
-					$this->shapeItems[$row{$i}][] = new Vector2($i, $y);
-				}
-			}
-		}
+    /**
+     * @param Item     $result
+     * @param string[] $shape
+     *
+     * @throws \Throwable
+     */
+    public function __construct(Item $result, ...$shape)
+    {
+        if (count($shape) === 0) {
+            throw new \InvalidArgumentException("Must provide a shape");
+        }
+        if (count($shape) > 3) {
+            throw new \InvalidStateException("Crafting recipes should be 1, 2, 3 rows, not " . count($shape));
+        }
+        foreach ($shape as $y => $row) {
+            if (strlen($row) === 0 || strlen($row) > 3) {
+                throw new \InvalidStateException("Crafting rows should be 1, 2, 3 characters, not " . count($row));
+            }
+            $this->ingredients[] = array_fill(0, strlen($row), null);
+            $len = strlen($row);
+            for ($i = 0; $i < $len; ++$i) {
+                $this->shape[$row[$i]] = null;
 
-		$this->output = clone $result;
-	}
+                if (!isset($this->shapeItems[$row[$i]])) {
+                    $this->shapeItems[$row[$i]] = [new Vector2($i, $y)];
+                } else {
+                    $this->shapeItems[$row[$i]][] = new Vector2($i, $y);
+                }
+            }
+        }
 
-	public function getWidth(){
-		return count($this->ingredients[0]);
-	}
+        $this->output = clone $result;
+    }
 
-	public function getHeight(){
-		return count($this->ingredients);
-	}
+    public function getWidth()
+    {
+        return count($this->ingredients[0]);
+    }
 
-	public function getResult(){
-		return $this->output;
-	}
+    public function getHeight()
+    {
+        return count($this->ingredients);
+    }
 
-	public function getId(){
-		return $this->id;
-	}
+    public function getResult()
+    {
+        return $this->output;
+    }
 
-	public function setId(UUID $id){
-		if($this->id !== null){
-			throw new \InvalidStateException("Id is already set");
-		}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-		$this->id = $id;
-	}
+    public function setId(UUID $id)
+    {
+        if ($this->id !== null) {
+            throw new \InvalidStateException("Id is already set");
+        }
 
-	/**
-	 * @param string $key
-	 * @param Item   $item
-	 *
-	 * @return $this
-	 * @throws \Exception
-	 */
-	public function setIngredient($key, Item $item){
-		if(!array_key_exists($key, $this->shape)){
-			throw new \Exception("Symbol does not appear in the shape: " . $key);
-		}
+        $this->id = $id;
+    }
 
-		$item->setCount(1);
-		$this->fixRecipe($key, $item);
+    /**
+     * @param string $key
+     * @param Item   $item
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setIngredient($key, Item $item)
+    {
+        if (!array_key_exists($key, $this->shape)) {
+            throw new \Exception("Symbol does not appear in the shape: " . $key);
+        }
 
-		return $this;
-	}
+        $item->setCount(1);
+        $this->fixRecipe($key, $item);
 
-	protected function fixRecipe($key, $item){
-		foreach($this->shapeItems[$key] as $entry){
-			$this->ingredients[$entry->y][$entry->x] = clone $item;
-		}
-	}
+        return $this;
+    }
 
-	/**
-	 * @return Item[][]
-	 */
-	public function getIngredientMap(){
-		$ingredients = [];
-		foreach($this->ingredients as $y => $row){
-			$ingredients[$y] = [];
-			foreach($row as $x => $ingredient){
-				if($ingredient !== null){
-					$ingredients[$y][$x] = clone $ingredient;
-				}else{
-					$ingredients[$y][$x] = Item::get(Item::AIR);
-				}
-			}
-		}
+    protected function fixRecipe($key, $item)
+    {
+        foreach ($this->shapeItems[$key] as $entry) {
+            $this->ingredients[$entry->y][$entry->x] = clone $item;
+        }
+    }
 
-		return $ingredients;
-	}
+    /**
+     * @return Item[][]
+     */
+    public function getIngredientMap()
+    {
+        $ingredients = [];
+        foreach ($this->ingredients as $y => $row) {
+            $ingredients[$y] = [];
+            foreach ($row as $x => $ingredient) {
+                if ($ingredient !== null) {
+                    $ingredients[$y][$x] = clone $ingredient;
+                } else {
+                    $ingredients[$y][$x] = Item::get(Item::AIR);
+                }
+            }
+        }
 
-	/**
- 	 * @return Item[]
- 	 */
- 	public function getIngredientList(){
- 		$ingredients = [];
- 		for ($x = 0; $x < 3; ++$x){
- 			for ($y = 0; $y < 3; ++$y){
- 				if (!empty($this->ingredients[$x][$y])){
- 					if ($this->ingredients[$x][$y]->getId() !== Item::AIR){
- 						$ingredients[] = clone $this->ingredients[$x][$y];
- 					}
- 				}
- 			}
- 		}
- 		return $ingredients;
- 	}
+        return $ingredients;
+    }
 
-	/**
-	 * @param $x
-	 * @param $y
-	 * @return null|Item
-	 */
-	public function getIngredient($x, $y){
-		return isset($this->ingredients[$y][$x]) ? $this->ingredients[$y][$x] : Item::get(Item::AIR);
-	}
+    /**
+     * @return Item[]
+     */
+    public function getIngredientList()
+    {
+        $ingredients = [];
+        for ($x = 0; $x < 3; ++$x) {
+            for ($y = 0; $y < 3; ++$y) {
+                if (!empty($this->ingredients[$x][$y])) {
+                    if ($this->ingredients[$x][$y]->getId() !== Item::AIR) {
+                        $ingredients[] = clone $this->ingredients[$x][$y];
+                    }
+                }
+            }
+        }
+        return $ingredients;
+    }
 
-	/**
-	 * @return string[]
-	 */
-	public function getShape(){
-		return $this->shape;
-	}
+    /**
+     * @param $x
+     * @param $y
+     * @return null|Item
+     */
+    public function getIngredient($x, $y)
+    {
+        return $this->ingredients[$y][$x] ?? Item::get(Item::AIR);
+    }
 
-	public function registerToCraftingManager(){
-		Server::getInstance()->getCraftingManager()->registerShapedRecipe($this);
-	}
+    /**
+     * @return string[]
+     */
+    public function getShape()
+    {
+        return $this->shape;
+    }
+
+    public function registerToCraftingManager()
+    {
+        Server::getInstance()->getCraftingManager()->registerShapedRecipe($this);
+    }
 }
